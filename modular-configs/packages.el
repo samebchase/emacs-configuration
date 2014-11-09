@@ -4,8 +4,8 @@
 (package-initialize)
 
 (require 'magit)
+(require 'eldoc)
 (require 'paredit)
 (require 'clojure-mode)
-(require 'eldoc)
 (require 'ace-jump-mode)
 

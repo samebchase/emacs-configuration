@@ -11,7 +11,6 @@
 (define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
 (define-key global-map (kbd "C-c l") 'ace-jump-line-mode)
 
-;; Backspace
+;; Magit
 
-(global-set-key (kbd "C-h") 'delete-backward-char)
-(global-set-key (kbd "C-?") 'help)
+(global-set-key (kbd "C-x g") 'magit-status)
