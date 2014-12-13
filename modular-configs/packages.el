@@ -2,6 +2,7 @@
 
 ;;(add-to-list 'package-archives
 ;;             '("melpa" . "http://melpa.org/packages/"))
+
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
@@ -10,9 +11,10 @@
 (package-initialize)
 
 (require 'magit)
-(require 'cider)
-(require 'clojure-mode)
 (require 'eldoc)
+(require 'cider)
 (require 'paredit)
+(require 'rust-mode)
+(require 'clojure-mode)
 (require 'ace-jump-mode)
 

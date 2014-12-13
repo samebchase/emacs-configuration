@@ -2,19 +2,21 @@
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 
-(server-start)
-
 (add-to-list 'load-path "~/.emacs.d/modular-configs/")
 
 (load "packages")
 (load "global-keybindings")
+(load "common-lisp")
 (load "clojure")
+(load "elisp")
 
 (load-theme 'zenburn t)
-
 (display-time)
-
 (desktop-save-mode 1)
+(fset 'yes-or-no-p 'y-or-n-p)
+(ido-mode t)
+
+(server-start)
 
 (setq-default indent-tabs-mode nil
               inhibit-startup-screen t
@@ -28,10 +30,6 @@
               mac-option-modifier 'super
               mac-command-modifier 'meta
               org-agenda-files "~/org/work.org")
-
-(fset 'yes-or-no-p 'y-or-n-p)
-
-(ido-mode t)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
