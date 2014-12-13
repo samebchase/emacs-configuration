@@ -10,5 +10,5 @@
 (define-key paredit-mode-map (kbd "M-[") 'paredit-wrap-square)
 (define-key paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
 
-(setq cider-repl-history-file "/Users/samuel/.cider-repl.log")
+(setq cider-repl-history-file "~/samuel/.cider-repl.log")
 (setq cider-repl-wrap-history t)

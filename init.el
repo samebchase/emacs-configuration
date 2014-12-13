@@ -1,7 +1,8 @@
-(server-start)
-
+(menu-bar-mode -1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
+
+(server-start)
 
 (add-to-list 'load-path "~/.emacs.d/modular-configs/")
 
@@ -48,7 +49,7 @@
                 :underline nil
                 :slant normal
                 :weight normal
-                :height 200
+                :height 150
                 :width normal
-                :foundry "apple"
+                :foundry "unknown"
                 :family "Inconsolata")))))
