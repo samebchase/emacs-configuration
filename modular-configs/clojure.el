@@ -12,5 +12,3 @@
 
 (setq cider-repl-history-file "/Users/samuel/.cider-repl.log")
 (setq cider-repl-wrap-history t)
-
-
