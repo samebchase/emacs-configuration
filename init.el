@@ -1,5 +1,10 @@
 ;; Initial setup taken from https://github.com/suvratapte/dot-emacs-dot-d/blob/master/init.el
 
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(display-time)
+
 (require 'package)
 
 ;; Add melpa to package archives.
@@ -24,35 +29,40 @@
   (package-install 'use-package))
 
 
+;; This `setq-default` form adapted from https://github.com/suvratapte/dot-emacs-dot-d/blob/master/init.el
+(setq-default
+ ;; Don't use the compiled code if its the older package.
+ load-prefer-newer t
+
+ ;; Do not show the startup message.
+ inhibit-startup-message t
+
+ ;; Do not put 'customize' config in init.el; give it another file.
+ custom-file "~/.emacs.d/custom-file.el")
+
+;; Change all yes/no questions to y/n type
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; Automatically update buffers if file content on the disk has changed.
+(global-auto-revert-mode t)
+
+(require 'use-package)
+
+(use-package nord-theme
+  :ensure t
+  :config
+  (load-theme 'nord t))
 
 
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status))
 
 
-
-;; (menu-bar-mode -1)
-;; (scroll-bar-mode -1)
-;; (tool-bar-mode -1)
-
-
-;; (require 'package)
-
-;; (add-to-list 'package-archives
-;;              '("melpa" . "http://melpa.org/packages/"))
-
-;; (add-to-list 'package-archives
-;;              '("marmalade" . "http://marmalade-repo.org/packages/"))
-;; (add-to-list 'package-archives
-;;              '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/") t)
-
-;; (package-initialize)
-
-;; (require 'magit)
 ;; (require 'eldoc)
-;; (require 'cider)
 ;; (require 'paredit)
 ;; (require 'dired-x)
 ;; (require 'rust-mode)
-;; (require 'clojure-mode)
 ;; (require 'ace-jump-mode)
 
 
@@ -99,7 +109,7 @@
 ;; (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 
 
-;; (load-theme 'nord t)
+
 
 ;; (display-time)
 ;; (desktop-save-mode 1)
@@ -150,15 +160,17 @@
 ;;       (innamespace . 0)
 ;;       (inline-open . 0)
 ;;       (case-label . +))))))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (use-package))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+
+;; (custom-set-variables
+;;  ;; custom-set-variables was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(package-selected-packages (quote (use-package))))
+;; (custom-set-faces
+;;  ;; custom-set-faces was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  )
