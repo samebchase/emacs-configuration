@@ -1,3 +1,34 @@
+;; Initial setup taken from https://github.com/suvratapte/dot-emacs-dot-d/blob/master/init.el
+
+(require 'package)
+
+;; Add melpa to package archives.
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("marmalade" . "https://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("gnu" . "https://elpa.gnu.org/packages/") t)
+
+
+;; Load and activate Emacs packages. Do this first so that the
+;; packages are loaded before you start trying to modify them.  This
+;; also sets the load path.
+(package-initialize)
+
+;; Install "use-package" if it is not installed.
+(when (not (package-installed-p 'use-package))
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+
+
+
+
+
+
 ;; (menu-bar-mode -1)
 ;; (scroll-bar-mode -1)
 ;; (tool-bar-mode -1)
@@ -67,6 +98,7 @@
 
 ;; (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 
+
 ;; (load-theme 'nord t)
 
 ;; (display-time)
@@ -118,3 +150,15 @@
 ;;       (innamespace . 0)
 ;;       (inline-open . 0)
 ;;       (case-label . +))))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages (quote (use-package))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
