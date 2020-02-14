@@ -4,6 +4,7 @@
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 (display-time)
+(server-start)
 
 (require 'package)
 
@@ -59,64 +60,120 @@
   :bind ("C-x g" . magit-status))
 
 
-;; (require 'eldoc)
-;; (require 'paredit)
+(use-package perl6-mode
+  :ensure t
+  :defer t)
+
+
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+(use-package paredit
+  :ensure t
+  :init
+  (add-hook 'cider-repl-mode-hook #'enable-paredit-mode)
+  (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook #'enable-paredit-mode)
+  :config
+  (show-paren-mode t)
+  :bind (("M-[" . paredit-wrap-square)
+         ("M-{" . paredit-wrap-curly)))
+
+
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+(use-package eldoc
+  :config
+  (global-eldoc-mode t))
+
+
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+(use-package ivy
+  :ensure t
+  :config
+  (ivy-mode t)
+  (setq ivy-use-virtual-buffers t
+
+	;; Display index and count both.
+	ivy-count-format "(%d/%d) "
+
+	;; By default, all ivy prompts start with `^'. Disable that.
+	ivy-initial-inputs-alist nil)
+
+  :bind (("C-x b" . ivy-switch-buffer)
+	 ("C-x B" . ivy-switch-buffer-other-window)))
+
+
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+(use-package swiper
+  :ensure t
+  :bind (("C-s" . swiper-isearch)
+         ("C-M-s" . isearch-forward-regexp)
+         ("C-M-r" . isearch-backward-regexp)))
+
+
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+(use-package counsel
+  :ensure t
+  :bind (("M-x" . counsel-M-x)
+         ("C-x C-f" . counsel-find-file)
+         ("C-'" . counsel-imenu)
+         ("C-c s" . counsel-rg)
+         :map counsel-find-file-map
+         ("RET" . ivy-alt-done)))
+
+
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+(use-package ace-jump-mode
+  :ensure t
+  :bind (("C-." . ace-jump-mode)
+	 ("C-c l" . ace-jump-line-mode)))
+
+
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+(use-package dumb-jump
+  :ensure t
+  :bind ("C-M-." . dumb-jump-go))
+
+
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode t))
+
+
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+(use-package ibuffer
+  :bind ("C-x C-b" . ibuffer))
+
+
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+(use-package projectile
+  :ensure t
+  :config
+  ;; Use it everywhere
+  (projectile-mode t)
+  :bind ("C-x f" . projectile-find-file))
+
+
+(use-package rg
+  :ensure t
+  :config
+  (rg-enable-default-bindings))
+
+
 ;; (require 'dired-x)
-;; (require 'rust-mode)
-;; (require 'ace-jump-mode)
-
-
-;; ;; Other Frame
-
-;; (global-set-key (kbd "<f5>") 'other-frame)
-
-;; ;; Ibuffer
-
-;; (global-set-key (kbd "C-x C-b") 'ibuffer)
-
-;; ;; Ace Jump Mode
-
-;; (define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
-;; (define-key global-map (kbd "C-c l") 'ace-jump-line-mode)
-
-;; ;; Magit
-
-;; (global-set-key (kbd "C-x g") 'magit-status)
-
-
-;; (add-to-list 'load-path "~/src/lisp/sly")
-;; (require 'sly-autoloads)
 
 ;; (add-hook 'slime-repl-mode-hook 'enable-paredit-mode)
 ;; (add-hook 'slime-mode-hook (lambda () (slime-autodoc-mode t)))
 ;; (add-hook 'lisp-mode-hook (lambda () (paredit-mode +1)))
 ;; (add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
 ;; (add-hook 'slime-connected-hook (lambda () (paredit-mode +1)))
-
-;; (add-to-list 'load-path (expand-file-name "~/.quicklisp/"))
-;; (load (expand-file-name "~/.quicklisp/slime-helper.el"))
-
-;; (setq inferior-lisp-program "/usr/bin/sbcl")
-
-;; (require 'slime)
-;; (slime-setup '(slime-fancy))
-
 ;; (add-hook 'slime-mode-hook            'turn-on-eldoc-mode)
 ;; (add-hook 'lisp-mode-hook             'turn-on-eldoc-mode)
 ;; (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-
-
-;; (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
-
-
-
-
-;; (display-time)
-;; (desktop-save-mode 1)
-;; (fset 'yes-or-no-p 'y-or-n-p)
-;; (ido-mode t)
-
-;; (server-start)
 
 ;; (setq-default indent-tabs-mode nil
 ;;               ;; dired-omit-files-p t
@@ -162,15 +219,3 @@
 ;;       (case-label . +))))))
 
 
-;; (custom-set-variables
-;;  ;; custom-set-variables was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(package-selected-packages (quote (use-package))))
-;; (custom-set-faces
-;;  ;; custom-set-faces was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  )
