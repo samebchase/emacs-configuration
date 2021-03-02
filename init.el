@@ -47,6 +47,68 @@
 ;; Automatically update buffers if file content on the disk has changed.
 (global-auto-revert-mode t)
 
+(global-set-key (kbd "s-SPC") 'mark-sexp)
+
+(global-set-key (kbd "H-2") 'split-window-below)
+(global-set-key (kbd "H-3") 'split-window-right)
+
+(global-set-key (kbd "H-q") 'delete-window)
+(global-set-key (kbd "H-w") 'delete-other-windows)
+(global-set-key (kbd "H-f") 'other-window)
+
+(global-set-key (kbd "H-r") 'window-configuration-to-register)
+(global-set-key (kbd "H-e") 'jump-to-register)
+
+(global-set-key (kbd "H-j") 'pop-to-mark-command)
+
+(global-set-key (kbd "s-f") 'forward-sexp)
+(global-set-key (kbd "s-b") 'backward-sexp)
+(global-set-key (kbd "s-t") 'transpose-sexps)
+(global-set-key (kbd "s-<tab>") 'prog-indent-sexp)
+
+(global-set-key (kbd "C-o") 'open-line)
+
+(global-set-key (kbd "H-a") 'magit)
+(global-set-key (kbd "H-M-g") 'ace-jump-word-mode)
+(global-set-key (kbd "H-g") 'ace-jump-char-mode)
+(global-set-key (kbd "H-d") 'fzf-projectile)
+(global-set-key (kbd "H-M-d") 'fzf-directory)
+(global-set-key (kbd "H-s") 'save-buffer)
+
+(global-set-key (kbd "s-s") 'swoop)
+(global-set-key (kbd "H-s-s") 'swoop-multi)
+(global-set-key (kbd "s-j") 'ace-jump-mode-pop-mark)
+
+
+(global-set-key (kbd "H-v") 'ido-switch-buffer)
+(global-set-key (kbd "H-M-v") 'ido-find-file)
+
+(global-set-key (kbd "H-c") 'cider-connect-clj)
+(global-set-key (kbd "H-z") 'cider-switch-to-repl-buffer)
+(global-set-key (kbd "H-n") 'cider-repl-set-ns)
+(global-set-key (kbd "H-l") 'cider-load-buffer)
+
+(global-set-key (kbd "H-<f3>") 'cider-debug-defun-at-point)
+
+(global-set-key (kbd "H-t") 'cider-test-run-test)
+(global-set-key (kbd "H-M-t") 'cider-test-run-ns-tests)
+
+(global-set-key (kbd "H-m") 'org-narrow-to-subtree)
+(global-set-key (kbd "H-M-m") 'widen)
+
+(global-set-key (kbd "H-'") 'org-edit-special)
+(global-set-key (kbd "H-M-'") 'org-edit-src-exit)
+
+(global-set-key (kbd "H--") 'text-scale-decrease)
+(global-set-key (kbd "H-=") 'text-scale-increase)
+
+(global-set-key (kbd "H-<up>") 'enlarge-window-horizontally)
+(global-set-key (kbd "H-<down>") 'shrink-window-horizontally)
+
+(global-set-key (kbd "H-<right>") 'enlarge-window)
+(global-set-key (kbd "H-<left>") 'shrink-window)
+
+
 (require 'use-package)
 
 (use-package nord-theme
@@ -76,6 +138,9 @@
   (add-hook 'lisp-mode-hook #'enable-paredit-mode)
   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
   (add-hook 'scheme-mode-hook #'enable-paredit-mode)
+  (add-hook 'mrepl-mode-hook #'enable-paredit-mode)
+  (add-hook 'sly-mode-hook #'enable-paredit-mode)
+  (add-hook 'clojure-mode-hook #'enable-paredit-mode)
   :config
   (show-paren-mode t)
   :bind (("M-[" . paredit-wrap-square)
@@ -164,6 +229,21 @@
   (rg-enable-default-bindings))
 
 
+(use-package sly
+  :ensure t)
+
+
+;; (unless (package-installed-p 'clojure-mode)
+;;   (package-install 'clojure-mode))
+
+(use-package clojure-mode
+  :ensure t)
+
+
+(use-package cider
+  :ensure t)
+
+
 ;; (require 'dired-x)
 
 ;; (add-hook 'slime-repl-mode-hook 'enable-paredit-mode)
@@ -189,33 +269,10 @@
 ;;               mac-option-modifier 'super
 ;;               mac-command-modifier 'meta)
 
-;; (custom-set-faces
-;;  ;; custom-set-faces was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(default ((t (:inherit nil :stipple nil :background "#3F3F3F" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 130 :width normal :family "Inconsolata")))))
-
-;; (setenv "LD_LIBRARY_PATH"
-;;   (concat
-;;    "/home/samuel/builds/rust/master/install/lib/"
-;;    (getenv "LD_LIBRARY_PATH")))
-;; (custom-set-variables
-;;  ;; custom-set-variables was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(custom-safe-themes
-;;    (quote
-;;     ("850213aa3159467c21ee95c55baadd95b91721d21b28d63704824a7d465b3ba8" default)))
-;;  '(package-selected-packages
-;;    (quote
-;;     (perl6-mode nord-theme markdown-mode markdown-mode+ zenburn-theme rut-smode paredit magit cider ace-jump-mode)))
-;;  '(safe-local-variable-values
-;;    (quote
-;;     ((c-file-offsets
-;;       (innamespace . 0)
-;;       (inline-open . 0)
-;;       (case-label . +))))))
-
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 130 :width normal :family "Iosevka")))))
 
