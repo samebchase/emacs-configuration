@@ -53,14 +53,13 @@
  fzf/executable "/usr/local/bin/fzf"
 
  ;; Do not put 'customize' config in init.el; give it another file.
- custom-file "~/.emacs.d/custom-file.el"
+ ;; custom-file "~/.emacs.d/custom-file.el"
 
  ns-right-command-modifier 'hyper
  ns-right-option-modifier 'super
 
  cider-repl-prompt-function 'cider-repl-prompt-on-newline)
 
- 
 
 ;; Change all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -330,14 +329,29 @@
 ;;               mac-option-modifier 'super
 ;;               mac-command-modifier 'meta)
 
+;; (custom-set-faces
+;;  custom-set-faces was added by Custom.
+;;  If you edit it by hand, you could mess it up, so be careful.
+;;  Your init file should contain only one such instance.
+;;  If there is more than one, they won't work right.
+;; '(default ((t (:inherit nil :stipple nil :background "#3F3F3F" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight light :height 121 :width normal :foundry "nil" :family "Iosevka"))))
+;;  '(cider-repl-stderr-face ((t (:inherit font-lock-warning-face :weight normal))))
+;;  '(font-lock-comment-face ((t (:foreground "#A3BE8C"))))
+;;  '(font-lock-doc-face ((t (:foreground "#A3BE8C"))))
+;;  '(markdown-pre-face ((t (:inherit ##)))))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(flycheck-clj-kondo flycheck-joker flycheck yaml-mode which-key vc-fossil use-package swoop sly rg raku-mode projectile pod-mode perl6-mode paredit nord-theme markdown-mode+ magit fzf f elpher dumb-jump deadgrep csv-mode counsel company command-log-mode clojure-mode-extra-font-locking cider ace-jump-mode)))
+
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-'(default ((t (:inherit nil :stipple nil :background "#3F3F3F" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight light :height 170 :width normal :foundry "nil" :family "Iosevka"))))
- '(cider-repl-stderr-face ((t (:inherit font-lock-warning-face :weight normal))))
- '(font-lock-comment-face ((t (:foreground "#A3BE8C"))))
- '(font-lock-doc-face ((t (:foreground "#A3BE8C"))))
- '(markdown-pre-face ((t (:inherit ##)))))
-
+ '(default ((t (:inherit nil :extend nil :stipple nil :background "#2E3440" :foreground "#D8DEE9" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 121 :width normal :foundry "ADBO" :family "Iosevka")))))
