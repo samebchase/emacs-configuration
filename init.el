@@ -6,6 +6,9 @@
 (display-time)
 (server-start)
 
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
+(setq exec-path (append exec-path '("/usr/local/bin")))
+
 (require 'package)
 
 ;; Add melpa to package archives.
@@ -31,23 +34,40 @@
 
 
 ;; This `setq-default` form adapted from https://github.com/suvratapte/dot-emacs-dot-d/blob/master/init.el
+
+
+(defun cider-repl-prompt-on-newline (ns)
+  "Return a prompt string with newline.
+   
+   NS is the namespace information passed into the function by
+   cider."
+  (concat ns ">\n"))
+
+
 (setq-default
  ;; Don't use the compiled code if its the older package.
  load-prefer-newer t
 
  ;; Do not show the startup message.
  inhibit-startup-message t
+ fzf/executable "/usr/local/bin/fzf"
 
  ;; Do not put 'customize' config in init.el; give it another file.
- custom-file "~/.emacs.d/custom-file.el")
+ custom-file "~/.emacs.d/custom-file.el"
+
+ ns-right-command-modifier 'hyper
+ ns-right-option-modifier 'super
+
+ cider-repl-prompt-function 'cider-repl-prompt-on-newline)
+
+ 
 
 ;; Change all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Automatically update buffers if file content on the disk has changed.
-(global-auto-revert-mode t)
+;; (global-auto-revert-mode t)
 
-(global-set-key (kbd "s-SPC") 'mark-sexp)
 
 (global-set-key (kbd "H-2") 'split-window-below)
 (global-set-key (kbd "H-3") 'split-window-right)
@@ -65,28 +85,35 @@
 (global-set-key (kbd "s-b") 'backward-sexp)
 (global-set-key (kbd "s-t") 'transpose-sexps)
 (global-set-key (kbd "s-<tab>") 'prog-indent-sexp)
+(global-set-key (kbd "s-SPC") 'mark-sexp)
+
+(global-set-key (kbd "H-c") 'kill-ring-save)
+(global-set-key (kbd "H-x") 'kill-region)
+(global-set-key (kbd "H-v") 'yank)
 
 (global-set-key (kbd "C-o") 'open-line)
 
 (global-set-key (kbd "H-a") 'magit)
 (global-set-key (kbd "H-M-g") 'ace-jump-word-mode)
 (global-set-key (kbd "H-g") 'ace-jump-char-mode)
-(global-set-key (kbd "H-d") 'fzf-projectile)
-(global-set-key (kbd "H-M-d") 'fzf-directory)
+
+;; (global-set-key (kbd "H-M-d") 'fzf-directory)
 (global-set-key (kbd "H-s") 'save-buffer)
 
 (global-set-key (kbd "s-s") 'swoop)
 (global-set-key (kbd "H-s-s") 'swoop-multi)
+
 (global-set-key (kbd "s-j") 'ace-jump-mode-pop-mark)
 
+(global-set-key (kbd "H-b") 'ido-switch-buffer)
+(global-set-key (kbd "H-d") 'fzf-projectile)
 
-(global-set-key (kbd "H-v") 'ido-switch-buffer)
-(global-set-key (kbd "H-M-v") 'ido-find-file)
 
-(global-set-key (kbd "H-c") 'cider-connect-clj)
-(global-set-key (kbd "H-z") 'cider-switch-to-repl-buffer)
-(global-set-key (kbd "H-n") 'cider-repl-set-ns)
+(global-set-key (kbd "s-c") 'cider-connect-clj)
+(global-set-key (kbd "s-z") 'cider-switch-to-repl-buffer)
+(global-set-key (kbd "s-n") 'cider-repl-set-ns)
 (global-set-key (kbd "H-l") 'cider-load-buffer)
+(global-set-key (kbd "H-k") 'cider-eval-defun-at-point)
 
 (global-set-key (kbd "H-<f3>") 'cider-debug-defun-at-point)
 
@@ -108,6 +135,8 @@
 (global-set-key (kbd "H-<right>") 'enlarge-window)
 (global-set-key (kbd "H-<left>") 'shrink-window)
 
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+
 
 (require 'use-package)
 
@@ -117,17 +146,29 @@
   (load-theme 'nord t))
 
 
+(use-package deadgrep
+  :ensure t)
+
+
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
 
 
-(use-package perl6-mode
+(use-package swoop
+  :ensure t)
+
+
+(use-package fzf  
+  :ensure t)
+
+
+(use-package raku-mode
   :ensure t
   :defer t)
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package paredit
   :ensure t
   :init
@@ -151,6 +192,12 @@
 (use-package eldoc
   :config
   (global-eldoc-mode t))
+
+
+(use-package company
+  :ensure t
+  :init
+  (add-hook 'after-init-hook 'global-company-mode))
 
 
 ;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
@@ -197,12 +244,6 @@
 
 
 ;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
-(use-package dumb-jump
-  :ensure t
-  :bind ("C-M-." . dumb-jump-go))
-
-
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
 (use-package which-key
   :ensure t
   :config
@@ -232,16 +273,36 @@
 (use-package sly
   :ensure t)
 
-
 ;; (unless (package-installed-p 'clojure-mode)
 ;;   (package-install 'clojure-mode))
-
 (use-package clojure-mode
   :ensure t)
 
 
 (use-package cider
   :ensure t)
+
+
+(use-package flycheck
+  :ensure t
+  :config
+  (global-flycheck-mode))
+
+
+(use-package flycheck-joker
+  :after clojure-mode
+  :ensure t)
+
+
+(use-package flycheck-clj-kondo
+  :ensure t
+  :after clojure-mode
+  :config
+  (dolist (checkers '((clj-kondo-clj . clojure-joker)
+                      (clj-kondo-cljs . clojurescript-joker)
+                      (clj-kondo-cljc . clojure-joker)
+                      (clj-kondo-edn . edn-joker)))
+    (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers)))))
 
 
 ;; (require 'dired-x)
@@ -274,5 +335,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 130 :width normal :family "Iosevka")))))
+'(default ((t (:inherit nil :stipple nil :background "#3F3F3F" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight light :height 170 :width normal :foundry "nil" :family "Iosevka"))))
+ '(cider-repl-stderr-face ((t (:inherit font-lock-warning-face :weight normal))))
+ '(font-lock-comment-face ((t (:foreground "#A3BE8C"))))
+ '(font-lock-doc-face ((t (:foreground "#A3BE8C"))))
+ '(markdown-pre-face ((t (:inherit ##)))))
 
