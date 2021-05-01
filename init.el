@@ -8,18 +8,20 @@
 
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
 (setq exec-path (append exec-path '("/usr/local/bin")))
+(setq exec-path (append exec-path '("~/.cargo/bin")))
+(setq exec-path (append exec-path '("~/bin")))
 
 (require 'package)
 
 ;; Add melpa to package archives.
 (add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
+	     '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives
-             '("marmalade" . "https://marmalade-repo.org/packages/") t)
+	     '("marmalade" . "https://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives
-             '("gnu" . "https://elpa.gnu.org/packages/") t)
+	     '("gnu" . "https://elpa.gnu.org/packages/") t)
 
 
 ;; Load and activate Emacs packages. Do this first so that the
@@ -38,7 +40,7 @@
 
 (defun cider-repl-prompt-on-newline (ns)
   "Return a prompt string with newline.
-   
+
    NS is the namespace information passed into the function by
    cider."
   (concat ns ">\n"))
@@ -60,7 +62,7 @@
 
  cider-repl-prompt-function 'cider-repl-prompt-on-newline)
 
- 
+
 
 ;; Change all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -75,6 +77,10 @@
 (global-set-key (kbd "H-q") 'delete-window)
 (global-set-key (kbd "H-w") 'delete-other-windows)
 (global-set-key (kbd "H-f") 'other-window)
+(global-set-key (kbd "H-s-f") 'flop-frame)
+(global-set-key (kbd "H-M-f") 'flip-frame)
+(global-set-key (kbd "C-s-f") 'transpose-frame)
+
 
 (global-set-key (kbd "H-r") 'window-configuration-to-register)
 (global-set-key (kbd "H-e") 'jump-to-register)
@@ -86,6 +92,8 @@
 (global-set-key (kbd "s-t") 'transpose-sexps)
 (global-set-key (kbd "s-<tab>") 'prog-indent-sexp)
 (global-set-key (kbd "s-SPC") 'mark-sexp)
+(global-set-key (kbd "s-w") 'whitespace-cleanup)
+
 
 (global-set-key (kbd "H-c") 'kill-ring-save)
 (global-set-key (kbd "H-x") 'kill-region)
@@ -151,21 +159,31 @@
 
 
 (use-package magit
-  :ensure t
-  :bind ("C-x g" . magit-status))
+  :ensure t)
 
 
 (use-package swoop
   :ensure t)
 
 
-(use-package fzf  
+(use-package fzf
   :ensure t)
 
 
 (use-package raku-mode
   :ensure t
   :defer t)
+
+
+(defun my-cljr-clojure-mode-hook ()
+  (clj-refactor-mode 1)
+  (yas-minor-mode 1))
+
+
+(use-package clj-refactor
+  :ensure t
+  :init
+  (add-hook 'clojure-mode-hook #'my-cljr-clojure-mode-hook))
 
 
 ;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
@@ -185,10 +203,10 @@
   :config
   (show-paren-mode t)
   :bind (("M-[" . paredit-wrap-square)
-         ("M-{" . paredit-wrap-curly)))
+	 ("M-{" . paredit-wrap-curly)))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package eldoc
   :config
   (global-eldoc-mode t))
@@ -200,7 +218,7 @@
   (add-hook 'after-init-hook 'global-company-mode))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package ivy
   :ensure t
   :config
@@ -217,45 +235,45 @@
 	 ("C-x B" . ivy-switch-buffer-other-window)))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package swiper
   :ensure t
   :bind (("C-s" . swiper-isearch)
-         ("C-M-s" . isearch-forward-regexp)
-         ("C-M-r" . isearch-backward-regexp)))
+	 ("C-M-s" . isearch-forward-regexp)
+	 ("C-M-r" . isearch-backward-regexp)))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package counsel
   :ensure t
   :bind (("M-x" . counsel-M-x)
-         ("C-x C-f" . counsel-find-file)
-         ("C-'" . counsel-imenu)
-         ("C-c s" . counsel-rg)
-         :map counsel-find-file-map
-         ("RET" . ivy-alt-done)))
+	 ("C-x C-f" . counsel-find-file)
+	 ("C-'" . counsel-imenu)
+	 ("C-c s" . counsel-rg)
+	 :map counsel-find-file-map
+	 ("RET" . ivy-alt-done)))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package ace-jump-mode
   :ensure t
   :bind (("C-." . ace-jump-mode)
 	 ("C-c l" . ace-jump-line-mode)))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package which-key
   :ensure t
   :config
   (which-key-mode t))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte, 
+;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package projectile
   :ensure t
   :config
@@ -299,9 +317,9 @@
   :after clojure-mode
   :config
   (dolist (checkers '((clj-kondo-clj . clojure-joker)
-                      (clj-kondo-cljs . clojurescript-joker)
-                      (clj-kondo-cljc . clojure-joker)
-                      (clj-kondo-edn . edn-joker)))
+		      (clj-kondo-cljs . clojurescript-joker)
+		      (clj-kondo-cljc . clojure-joker)
+		      (clj-kondo-edn . edn-joker)))
     (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers)))))
 
 
@@ -340,4 +358,3 @@
  '(font-lock-comment-face ((t (:foreground "#A3BE8C"))))
  '(font-lock-doc-face ((t (:foreground "#A3BE8C"))))
  '(markdown-pre-face ((t (:inherit ##)))))
-
