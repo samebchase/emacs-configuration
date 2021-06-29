@@ -1,4 +1,7 @@
-;; Initial setup taken from https://github.com/suvratapte/dot-emacs-dot-d/blob/master/init.el
+;;; init.el --- Summary
+;;; Commentary:
+;;; Quite a lot of the setup is taken from Mr. S.U.V.R.A.T Apte,
+;;; https://github.com/suvratapte/dot-emacs-dot-d/blob/master/init.el
 
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
@@ -10,6 +13,66 @@
 (setq exec-path (append exec-path '("/usr/local/bin")))
 (setq exec-path (append exec-path '("~/.cargo/bin")))
 (setq exec-path (append exec-path '("~/bin")))
+
+
+(setq JAVA_BASE "/Library/Java/JavaVirtualMachines")
+
+;;
+;; This function returns the list of installed
+;;
+(defun switch-java--versions ()
+  "Return the list of installed JDK."
+  (seq-remove
+   (lambda (a) (or (equal a ".") (equal a "..")))
+   (directory-files JAVA_BASE)))
+
+
+(defun switch-java--save-env ()
+  "Store original PATH and JAVA_HOME."
+  (when (not (boundp 'SW_JAVA_PATH))
+    (setq SW_JAVA_PATH (getenv "PATH")))
+  (when (not (boundp 'SW_JAVA_HOME))
+    (setq SW_JAVA_HOME (getenv "JAVA_HOME"))))
+
+
+(defun switch-java ()
+  "List the installed JDKs and enable to switch the JDK in use."
+  (interactive)
+  ;; store original PATH and JAVA_HOME
+  (switch-java--save-env)
+
+  (let ((ver (completing-read
+              "Which Java: "
+              (seq-map-indexed
+               (lambda (e i) (list e i)) (switch-java--versions))
+              nil t "")))
+    ;; switch java version
+    (setenv "JAVA_HOME" (concat JAVA_BASE "/" ver "/Contents/Home"))
+    (setenv "PATH" (concat (concat (getenv "JAVA_HOME") "/bin/java")
+                           ":" SW_JAVA_PATH)))
+  ;; show version
+  (switch-java-which-version?))
+
+
+(defun switch-java-default ()
+  "Restore the default Java version."
+  (interactive)
+  ;; store original PATH and JAVA_HOME
+  (switch-java--save-env)
+
+  ;; switch java version
+  (setenv "JAVA_HOME" SW_JAVA_HOME)
+  (setenv "PATH" SW_JAVA_PATH)
+  ;; show version
+  (switch-java-which-version?))
+
+
+(defun switch-java-which-version? ()
+  "Display the current version selected Java version."
+  (interactive)
+  ;; displays current java version
+  (message (concat "Java HOME: " (getenv "JAVA_HOME"))))
+
 
 (require 'package)
 
@@ -55,14 +118,12 @@
  fzf/executable "/usr/local/bin/fzf"
 
  ;; Do not put 'customize' config in init.el; give it another file.
- custom-file "~/.emacs.d/custom-file.el"
+ ;; custom-file "~/.emacs.d/custom-file.el"
 
  ns-right-command-modifier 'hyper
  ns-right-option-modifier 'super
 
  cider-repl-prompt-function 'cider-repl-prompt-on-newline)
-
-
 
 ;; Change all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -108,18 +169,19 @@
 ;; (global-set-key (kbd "H-M-d") 'fzf-directory)
 (global-set-key (kbd "H-s") 'save-buffer)
 
-(global-set-key (kbd "s-s") 'swoop)
-(global-set-key (kbd "H-s-s") 'swoop-multi)
+(global-set-key (kbd "s-s") 'org-clock-in)
+(global-set-key (kbd "s-S") 'org-clock-out)
 
 (global-set-key (kbd "s-j") 'ace-jump-mode-pop-mark)
 
 (global-set-key (kbd "H-b") 'ido-switch-buffer)
-(global-set-key (kbd "H-d") 'fzf-projectile)
 
 
 (global-set-key (kbd "s-c") 'cider-connect-clj)
 (global-set-key (kbd "s-z") 'cider-switch-to-repl-buffer)
 (global-set-key (kbd "s-n") 'cider-repl-set-ns)
+(global-set-key (kbd "s-d") 'lsp-describe-thing-at-point)
+
 (global-set-key (kbd "H-l") 'cider-load-buffer)
 (global-set-key (kbd "H-k") 'cider-eval-defun-at-point)
 
@@ -128,8 +190,7 @@
 (global-set-key (kbd "H-t") 'cider-test-run-test)
 (global-set-key (kbd "H-M-t") 'cider-test-run-ns-tests)
 
-(global-set-key (kbd "H-m") 'org-narrow-to-subtree)
-(global-set-key (kbd "H-M-m") 'widen)
+(global-set-key (kbd "H-n") 'org-toggle-narrow-to-subtree)
 
 (global-set-key (kbd "H-'") 'org-edit-special)
 (global-set-key (kbd "H-M-'") 'org-edit-src-exit)
@@ -162,8 +223,16 @@
   :ensure t)
 
 
-(use-package swoop
-  :ensure t)
+(use-package lsp-java
+  :ensure t
+  :init
+  (add-hook 'java-mode-hook #'lsp))
+
+
+(use-package magit-delta
+  :ensure t
+  :init
+  (add-hook 'magit-mode-hook (lambda () (magit-delta-mode +1))))
 
 
 (use-package fzf
@@ -186,7 +255,6 @@
   (add-hook 'clojure-mode-hook #'my-cljr-clojure-mode-hook))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package paredit
   :ensure t
   :init
@@ -206,7 +274,6 @@
 	 ("M-{" . paredit-wrap-curly)))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package eldoc
   :config
   (global-eldoc-mode t))
@@ -218,7 +285,42 @@
   (add-hook 'after-init-hook 'global-company-mode))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
+(use-package lsp-mode
+  :ensure t
+  :init
+  (setq lsp-keymap-prefix "s-r")
+  :hook
+  ((rust-mode . lsp)
+   ;; (clojure-mode . lsp)
+   (lsp-mode . lsp-enable-which-key-integration)
+   (java-mode . #'lsp-deferred))
+  :config
+  (dolist (m '(clojure-mode
+               clojurec-mode
+               clojurescript-mode
+               clojurex-mode))
+    (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
+  :commands lsp)
+
+
+(use-package rust-mode
+  :ensure t)
+
+
+(use-package racer
+  :ensure t
+  :init
+  (add-hook 'rust-mode-hook #'racer-mode)
+  (add-hook 'racer-mode-hook #'eldoc-mode)
+  (add-hook 'racer-mode-hook #'company-mode)
+  :config
+  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common))
+
+
+(use-package markdown-mode
+  :ensure t)
+
+
 (use-package ivy
   :ensure t
   :config
@@ -235,7 +337,6 @@
 	 ("C-x B" . ivy-switch-buffer-other-window)))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package swiper
   :ensure t
   :bind (("C-s" . swiper-isearch)
@@ -243,7 +344,6 @@
 	 ("C-M-r" . isearch-backward-regexp)))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package counsel
   :ensure t
   :bind (("M-x" . counsel-M-x)
@@ -254,32 +354,28 @@
 	 ("RET" . ivy-alt-done)))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package ace-jump-mode
   :ensure t
   :bind (("C-." . ace-jump-mode)
 	 ("C-c l" . ace-jump-line-mode)))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package which-key
   :ensure t
   :config
   (which-key-mode t))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer))
 
 
-;; This configuration adapted from Mr. S.U.V.R.A.T Apte,
 (use-package projectile
   :ensure t
   :config
   ;; Use it everywhere
   (projectile-mode t)
-  :bind ("C-x f" . projectile-find-file))
+  :bind ("H-d" . projectile-find-file))
 
 
 (use-package rg
@@ -323,17 +419,6 @@
     (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers)))))
 
 
-;; (require 'dired-x)
-
-;; (add-hook 'slime-repl-mode-hook 'enable-paredit-mode)
-;; (add-hook 'slime-mode-hook (lambda () (slime-autodoc-mode t)))
-;; (add-hook 'lisp-mode-hook (lambda () (paredit-mode +1)))
-;; (add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
-;; (add-hook 'slime-connected-hook (lambda () (paredit-mode +1)))
-;; (add-hook 'slime-mode-hook            'turn-on-eldoc-mode)
-;; (add-hook 'lisp-mode-hook             'turn-on-eldoc-mode)
-;; (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-
 ;; (setq-default indent-tabs-mode nil
 ;;               ;; dired-omit-files-p t
 ;;               ;; dired-omit-files (concat dired-omit-files "\\|^\\..+$")
@@ -348,13 +433,32 @@
 ;;               mac-option-modifier 'super
 ;;               mac-command-modifier 'meta)
 
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-agenda-files '("~/org/tasks.org" "~/projects/hs/chatbots/plan.org"))
+ '(package-selected-packages
+   '(lsp-java racer racer-mode clj-refactor markdown-mode which-key use-package transpose-frame swoop sly rg raku-mode projectile perlbrew paredit nord-theme magit-delta fzf flycheck-joker flycheck-clj-kondo elpher dumb-jump deadgrep counsel company cider ace-jump-mode))
+ '(warning-suppress-types '((comp))))
+
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-'(default ((t (:inherit nil :stipple nil :background "#3F3F3F" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight light :height 170 :width normal :foundry "nil" :family "Iosevka"))))
+ '(default ((t (:inherit nil :extend nil :stipple nil :background "#3F3F3F" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 170 :width normal :foundry "nil" :family "Iosevka"))))
  '(cider-repl-stderr-face ((t (:inherit font-lock-warning-face :weight normal))))
+ '(cider-test-error-face ((t (:background "#d08770"))))
+ '(cider-test-failure-face ((t (:background "#BF616A"))))
+ '(cider-test-success-face ((t (:background "#A3BE8C" :foreground "black"))))
  '(font-lock-comment-face ((t (:foreground "#A3BE8C"))))
  '(font-lock-doc-face ((t (:foreground "#A3BE8C"))))
+ '(markdown-code-face ((t (:inherit fixed-pitch :family "Iosevka"))))
  '(markdown-pre-face ((t (:inherit ##)))))
+
+(provide 'init)
+;;; init.el ends here
