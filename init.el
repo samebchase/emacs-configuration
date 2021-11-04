@@ -3,6 +3,7 @@
 ;;; Quite a lot of the setup is taken from Mr. S.U.V.R.A.T Apte,
 ;;; https://github.com/suvratapte/dot-emacs-dot-d/blob/master/init.el
 
+;;; Code:
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
@@ -14,6 +15,11 @@
 (setq exec-path (append exec-path '("~/.cargo/bin")))
 (setq exec-path (append exec-path '("~/bin")))
 
+(setenv "LC_CTYPE" "en_US.UTF-8")
+(setenv "LC_ALL" "en_US.UTF-8")
+
+(setenv "LANGUAGE" "en_US.UTF-8")
+(setenv "LANG" "en_US.UTF-8")
 
 (setq JAVA_BASE "/Library/Java/JavaVirtualMachines")
 
@@ -152,7 +158,9 @@
 (global-set-key (kbd "s-b") 'backward-sexp)
 (global-set-key (kbd "s-t") 'transpose-sexps)
 (global-set-key (kbd "s-<tab>") 'prog-indent-sexp)
+(global-set-key (kbd "s-i") 'prog-indent-sexp)
 (global-set-key (kbd "s-SPC") 'mark-sexp)
+(global-set-key (kbd "s-m") 'mark-sexp)
 (global-set-key (kbd "s-w") 'whitespace-cleanup)
 
 
@@ -408,6 +416,10 @@
   :ensure t)
 
 
+(use-package nix-mode
+  :ensure t)
+
+
 (use-package flycheck-clj-kondo
   :ensure t
   :after clojure-mode
@@ -439,9 +451,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files '("~/org/tasks.org" "~/projects/hs/chatbots/plan.org"))
+ '(org-refile-targets '((org-agenda-files :maxlevel . 3)))
  '(package-selected-packages
-   '(lsp-java racer racer-mode clj-refactor markdown-mode which-key use-package transpose-frame swoop sly rg raku-mode projectile perlbrew paredit nord-theme magit-delta fzf flycheck-joker flycheck-clj-kondo elpher dumb-jump deadgrep counsel company cider ace-jump-mode))
+   '(nix-mode lsp-java racer racer-mode clj-refactor markdown-mode which-key use-package transpose-frame swoop sly rg raku-mode projectile perlbrew paredit nord-theme magit-delta fzf flycheck-joker flycheck-clj-kondo elpher dumb-jump deadgrep counsel company cider ace-jump-mode))
  '(warning-suppress-types '((comp))))
 
 
