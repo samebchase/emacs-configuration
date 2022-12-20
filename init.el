@@ -4,7 +4,8 @@
 ;;; https://github.com/suvratapte/dot-emacs-dot-d/blob/master/init.el
 
 ;;; Code:
-(menu-bar-mode -1)
+;; (menu-bar-mode -1)
+(tab-bar-mode 1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 (display-time)
@@ -15,69 +16,12 @@
 (setq exec-path (append exec-path '("~/.cargo/bin")))
 (setq exec-path (append exec-path '("~/bin")))
 
+
 (setenv "LC_CTYPE" "en_US.UTF-8")
 (setenv "LC_ALL" "en_US.UTF-8")
 
 (setenv "LANGUAGE" "en_US.UTF-8")
 (setenv "LANG" "en_US.UTF-8")
-
-(setq JAVA_BASE "/Library/Java/JavaVirtualMachines")
-
-;;
-;; This function returns the list of installed
-;;
-(defun switch-java--versions ()
-  "Return the list of installed JDK."
-  (seq-remove
-   (lambda (a) (or (equal a ".") (equal a "..")))
-   (directory-files JAVA_BASE)))
-
-
-(defun switch-java--save-env ()
-  "Store original PATH and JAVA_HOME."
-  (when (not (boundp 'SW_JAVA_PATH))
-    (setq SW_JAVA_PATH (getenv "PATH")))
-  (when (not (boundp 'SW_JAVA_HOME))
-    (setq SW_JAVA_HOME (getenv "JAVA_HOME"))))
-
-
-(defun switch-java ()
-  "List the installed JDKs and enable to switch the JDK in use."
-  (interactive)
-  ;; store original PATH and JAVA_HOME
-  (switch-java--save-env)
-
-  (let ((ver (completing-read
-              "Which Java: "
-              (seq-map-indexed
-               (lambda (e i) (list e i)) (switch-java--versions))
-              nil t "")))
-    ;; switch java version
-    (setenv "JAVA_HOME" (concat JAVA_BASE "/" ver "/Contents/Home"))
-    (setenv "PATH" (concat (concat (getenv "JAVA_HOME") "/bin/java")
-                           ":" SW_JAVA_PATH)))
-  ;; show version
-  (switch-java-which-version?))
-
-
-(defun switch-java-default ()
-  "Restore the default Java version."
-  (interactive)
-  ;; store original PATH and JAVA_HOME
-  (switch-java--save-env)
-
-  ;; switch java version
-  (setenv "JAVA_HOME" SW_JAVA_HOME)
-  (setenv "PATH" SW_JAVA_PATH)
-  ;; show version
-  (switch-java-which-version?))
-
-
-(defun switch-java-which-version? ()
-  "Display the current version selected Java version."
-  (interactive)
-  ;; displays current java version
-  (message (concat "Java HOME: " (getenv "JAVA_HOME"))))
 
 
 (require 'package)
@@ -104,9 +48,6 @@
   (package-install 'use-package))
 
 
-;; This `setq-default` form adapted from https://github.com/suvratapte/dot-emacs-dot-d/blob/master/init.el
-
-
 (defun cider-repl-prompt-on-newline (ns)
   "Return a prompt string with newline.
 
@@ -115,9 +56,11 @@
   (concat ns ">\n"))
 
 
+;; This `setq-default` form adapted from https://github.com/suvratapte/dot-emacs-dot-d/blob/master/init.el
 (setq-default
  ;; Don't use the compiled code if its the older package.
  load-prefer-newer t
+ org-adapt-indentation t
 
  ;; Do not show the startup message.
  inhibit-startup-message t
@@ -135,7 +78,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Automatically update buffers if file content on the disk has changed.
-;; (global-auto-revert-mode t)
+(global-auto-revert-mode t)
 
 
 (global-set-key (kbd "H-2") 'split-window-below)
@@ -144,9 +87,6 @@
 (global-set-key (kbd "H-q") 'delete-window)
 (global-set-key (kbd "H-w") 'delete-other-windows)
 (global-set-key (kbd "H-f") 'other-window)
-(global-set-key (kbd "H-s-f") 'flop-frame)
-(global-set-key (kbd "H-M-f") 'flip-frame)
-(global-set-key (kbd "C-s-f") 'transpose-frame)
 
 
 (global-set-key (kbd "H-r") 'window-configuration-to-register)
@@ -177,9 +117,6 @@
 ;; (global-set-key (kbd "H-M-d") 'fzf-directory)
 (global-set-key (kbd "H-s") 'save-buffer)
 
-(global-set-key (kbd "s-s") 'org-clock-in)
-(global-set-key (kbd "s-S") 'org-clock-out)
-
 (global-set-key (kbd "s-j") 'ace-jump-mode-pop-mark)
 
 (global-set-key (kbd "H-b") 'ido-switch-buffer)
@@ -201,7 +138,11 @@
 (global-set-key (kbd "H-n") 'org-toggle-narrow-to-subtree)
 
 (global-set-key (kbd "H-'") 'org-edit-special)
+(global-set-key (kbd "H-!") 'org-time-stamp-inactive)
 (global-set-key (kbd "H-M-'") 'org-edit-src-exit)
+(global-set-key (kbd "H-o") 'org-agenda-open-link)
+(global-set-key (kbd "s-/") 'org-capture)
+
 
 (global-set-key (kbd "H--") 'text-scale-decrease)
 (global-set-key (kbd "H-=") 'text-scale-increase)
@@ -215,7 +156,19 @@
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 
 
+(defun uf/unfill-paragraph (&optional region)
+  "Takes a multi-line paragraph and makes it into a single line of text."
+  (interactive (progn (barf-if-buffer-read-only) '(t)))
+  (let ((fill-column (point-max))
+        ;; This would override `fill-column' if it's an integer.
+        (emacs-lisp-docstring-fill-column t))
+    (fill-paragraph nil region)))
+
+(global-set-key (kbd "M-Q") 'uf/unfill-paragraph)
+
+
 (require 'use-package)
+
 
 (use-package nord-theme
   :ensure t
@@ -223,24 +176,59 @@
   (load-theme 'nord t))
 
 
-(use-package deadgrep
-  :ensure t)
-
-
 (use-package magit
   :ensure t)
+
+
+(use-package treemacs
+  :ensure t)
+
+
+(use-package lsp-treemacs
+  :ensure t)
+
+
+(use-package lsp-mode
+  :ensure t
+  :init
+  (setq lsp-keymap-prefix "s-r")
+  ;; https://github.com/emacs-lsp/lsp-mode/issues/3303
+  ;; (define-key dap-mode-map [mouse-1] nil)
+  :hook
+  ((rust-mode . lsp)
+   ;; (clojure-mode . lsp)
+   (lsp-mode . lsp-enable-which-key-integration)
+   (java-mode . #'lsp-deferred))
+  :config
+  (dolist (m '(clojure-mode
+               clojurec-mode
+               clojurescript-mode
+               clojurex-mode))
+    (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
+  :commands lsp)
 
 
 (use-package lsp-java
   :ensure t
   :init
-  (add-hook 'java-mode-hook #'lsp))
+  (add-hook 'java-mode-hook #'lsp)
+  :config
+  ;; (define-key java-mode-map "," nil)
+  ;; (define-key java-mode-map ";" nil)
+  
+  )
 
 
-(use-package magit-delta
-  :ensure t
-  :init
-  (add-hook 'magit-mode-hook (lambda () (magit-delta-mode +1))))
+(use-package elfeed
+  :ensure t)
+
+
+(use-package yaml-mode
+  :ensure t)
+
+
+(use-package csv-mode
+  :ensure t)
 
 
 (use-package fzf
@@ -255,6 +243,10 @@
 (defun my-cljr-clojure-mode-hook ()
   (clj-refactor-mode 1)
   (yas-minor-mode 1))
+
+
+(use-package toml-mode
+  :ensure t)
 
 
 (use-package clj-refactor
@@ -291,38 +283,6 @@
   :ensure t
   :init
   (add-hook 'after-init-hook 'global-company-mode))
-
-
-(use-package lsp-mode
-  :ensure t
-  :init
-  (setq lsp-keymap-prefix "s-r")
-  :hook
-  ((rust-mode . lsp)
-   ;; (clojure-mode . lsp)
-   (lsp-mode . lsp-enable-which-key-integration)
-   (java-mode . #'lsp-deferred))
-  :config
-  (dolist (m '(clojure-mode
-               clojurec-mode
-               clojurescript-mode
-               clojurex-mode))
-    (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
-  :commands lsp)
-
-
-(use-package rust-mode
-  :ensure t)
-
-
-(use-package racer
-  :ensure t
-  :init
-  (add-hook 'rust-mode-hook #'racer-mode)
-  (add-hook 'racer-mode-hook #'eldoc-mode)
-  (add-hook 'racer-mode-hook #'company-mode)
-  :config
-  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common))
 
 
 (use-package markdown-mode
@@ -395,8 +355,6 @@
 (use-package sly
   :ensure t)
 
-;; (unless (package-installed-p 'clojure-mode)
-;;   (package-install 'clojure-mode))
 (use-package clojure-mode
   :ensure t)
 
@@ -431,19 +389,20 @@
     (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers)))))
 
 
-;; (setq-default indent-tabs-mode nil
-;;               ;; dired-omit-files-p t
-;;               ;; dired-omit-files (concat dired-omit-files "\\|^\\..+$")
-;;               inhibit-startup-screen t
-;;               use-file-dialog nil
-;;               tab-width 4
-;;               column-number-mode t
-;;               display-battery-mode t
-;;               blink-matching-paren t
-;;               blink-matching-delay .25
-;;               split-height-threshold nil
-;;               mac-option-modifier 'super
-;;               mac-command-modifier 'meta)
+(add-to-list 'load-path "/Users/samuel/.opam/5.0.0~rc1/share/emacs/site-lisp")
+(require 'ocp-indent)
+
+
+(let ((opam-share (ignore-errors (car (process-lines "opam" "var" "share")))))
+  (when (and opam-share (file-directory-p opam-share))
+    ;; Register Merlin
+    (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
+    (autoload 'merlin-mode "merlin" nil t nil)
+    ;; Automatically start it in OCaml buffers
+    (add-hook 'tuareg-mode-hook 'merlin-mode t)
+    (add-hook 'caml-mode-hook 'merlin-mode t)
+    ;; Use opam switch to lookup ocamlmerlin binary
+    (setq merlin-command 'opam)))
 
 
 (custom-set-variables
@@ -451,26 +410,37 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(elfeed-feeds
+   '("http://feeds.feedburner.com/explainextended" "https://webzine.puffy.cafe/atom.xml" "https://surfingcomplexity.blog/feed" "https://this-week-in-rust.org/rss.xml" "https://v2.ocaml.org/feed.xml" "https://buttondown.email/hillelwayne/rss" "https://mattlakeman.org/feed" "https://soatok.blog/b/rss" "https://xeiaso.net/blog.rss" "https://zerodha.tech/index.xml" "https://planet.postgresql.org/rss20.xml" "https://twitter.com/OpenZFS" "https://rakudoweekly.blog/blog-feed/" "https://www.dragonflydigest.com/feed" "https://vermaden.wordpress.com/posts/rss" "https://planet.emacslife.com/atom.xml" "http://planet.lisp.org/rss20.xml" "https://lethain.com/feeds.xml" "https://www.gwern.net/rss" "https://matt.might.net/articles/feed.rss" "https://acoup.blog/rss" "https://eli.thegreenplace.net/feeds/all.atom.xml" "https://newsletter.nixers.net/feed.xml" "https://www.undeadly.org/cgi?action=rss" "https://www.reddit.com/r/openbsd.rss" "https://www.reddit.com/r/rakulang.rss" "https://myme.no/feed.xml" "https://fasterthanli.me/index.xml" "https://ianthehenry.com/feed.xml" "https://databasearchitects.blogspot.com/feeds/posts/default"
+     ("https://redecentralize.org/blog/feed.rss" blog decentralized)
+     ("http://nullprogram.com/feed" blog programming)
+     ("https://venam.nixers.net/blog/feed.xml" blog unix)))
+ '(indent-tabs-mode nil)
+;;  '(lsp-enable-indentation nil)
+;;  '(lsp-enable-on-type-formatting nil)
+ '(org-agenda-files
+   '("~/oncall/2022-11-28-oncall-week/plan.org" "/Users/samuel/projects/hs/tracing/plan.org" "/Users/samuel/projects/hs/platform/migration-framework/plan.org" "/Users/samuel/oncall/2022-10-03-oncall-week/plan.org" "/Users/samuel/oncall/2022-09-21-undelete-automation/plan.org" "/Users/samuel/oncall/2022-09-12-duplicated-timba-messages/plan.org" "/Users/samuel/oncall/2022-08-29-oncall-week/plan.org" "/Users/samuel/projects/hs/dashboard/plan.org" "/Users/samuel/projects/hs/flink/plan.org" "/Users/samuel/oncall/2022-05-30-oncall-week/plan.org" "/Users/samuel/projects/hs/autox/automations/plan.org" "/Users/samuel/oncall/oncall.org" "/Users/samuel/org/IC.org" "/Users/samuel/org/administrivia.org" "/Users/samuel/projects/hs/autox/auto-assignment/plan.org" "/Users/samuel/projects/hs/autox/FreeSDK/plan.org" "/Users/samuel/projects/hs/autox/flink-benchmarking/plan.org" "/Users/samuel/projects/hs/autox/smart-intents/plan.org" "/Users/samuel/projects/hs/localdevenv/plan.org" "/Users/samuel/projects/hs/meneldor/plan.org" "/Users/samuel/org/tasks.org" "/Users/samuel/projects/hs/chatbots/plan.org"))
+ '(org-capture-templates
+   '(("c" "Code Review" entry
+      (file+headline "~/org/tasks.org" "Code Reviews")
+      "*** TODO [#B] %?%c" :prepend t)))
  '(org-refile-targets '((org-agenda-files :maxlevel . 3)))
  '(package-selected-packages
-   '(nix-mode lsp-java racer racer-mode clj-refactor markdown-mode which-key use-package transpose-frame swoop sly rg raku-mode projectile perlbrew paredit nord-theme magit-delta fzf flycheck-joker flycheck-clj-kondo elpher dumb-jump deadgrep counsel company cider ace-jump-mode))
+   '(compat merlin log4j-mode elfeed toml-mode csv-mode yaml-mode nix-mode clj-refactor markdown-mode which-key use-package sly rg raku-mode projectile perlbrew nord-theme fzf flycheck-joker flycheck-clj-kondo elpher deadgrep counsel company cider ace-jump-mode))
+ '(tab-bar-select-tab-modifiers '(hyper))
  '(warning-suppress-types '((comp))))
-
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :extend nil :stipple nil :background "#3F3F3F" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 170 :width normal :foundry "nil" :family "Iosevka"))))
- '(cider-repl-stderr-face ((t (:inherit font-lock-warning-face :weight normal))))
- '(cider-test-error-face ((t (:background "#d08770"))))
- '(cider-test-failure-face ((t (:background "#BF616A"))))
- '(cider-test-success-face ((t (:background "#A3BE8C" :foreground "black"))))
- '(font-lock-comment-face ((t (:foreground "#A3BE8C"))))
- '(font-lock-doc-face ((t (:foreground "#A3BE8C"))))
- '(markdown-code-face ((t (:inherit fixed-pitch :family "Iosevka"))))
- '(markdown-pre-face ((t (:inherit ##)))))
+ '(default ((t (:inherit nil :stipple nil :background "#2E3440" :foreground "#D8DEE9" :inverse-video nil :box nil :strike-through nil :extend nil :overline nil :underline nil :slant normal :weight regular :height 160 :width normal :foundry "nil" :family "Iosevka"))))
+ '(cider-test-error-face ((t (:background "#bf616a" :foreground "#434c5e"))))
+ '(cider-test-failure-face ((t (:background "#ebcb8b" :foreground "#434c5e"))))
+ '(cider-test-success-face ((t (:background "#a3be8c" :foreground "#434c5e"))))
+ '(fixed-pitch ((t (:weight bold :family "Iosevka"))))
+ '(markdown-pre-face ((t (:inherit (markdown-code-face font-lock-constant-face) :weight semi-bold :family "Iosevka")))))
 
 (provide 'init)
 ;;; init.el ends here
