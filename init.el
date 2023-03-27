@@ -15,6 +15,7 @@
 (setq exec-path (append exec-path '("/usr/local/bin")))
 (setq exec-path (append exec-path '("~/.cargo/bin")))
 (setq exec-path (append exec-path '("~/bin")))
+(setq exec-path (append exec-path '("/Users/samuel/.nvm/versions/node/v16.13.0/bin")))
 
 
 (setenv "LC_CTYPE" "en_US.UTF-8")
@@ -410,23 +411,22 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(auth-source-save-behavior nil)
  '(elfeed-feeds
    '("http://feeds.feedburner.com/explainextended" "https://webzine.puffy.cafe/atom.xml" "https://surfingcomplexity.blog/feed" "https://this-week-in-rust.org/rss.xml" "https://v2.ocaml.org/feed.xml" "https://buttondown.email/hillelwayne/rss" "https://mattlakeman.org/feed" "https://soatok.blog/b/rss" "https://xeiaso.net/blog.rss" "https://zerodha.tech/index.xml" "https://planet.postgresql.org/rss20.xml" "https://twitter.com/OpenZFS" "https://rakudoweekly.blog/blog-feed/" "https://www.dragonflydigest.com/feed" "https://vermaden.wordpress.com/posts/rss" "https://planet.emacslife.com/atom.xml" "http://planet.lisp.org/rss20.xml" "https://lethain.com/feeds.xml" "https://www.gwern.net/rss" "https://matt.might.net/articles/feed.rss" "https://acoup.blog/rss" "https://eli.thegreenplace.net/feeds/all.atom.xml" "https://newsletter.nixers.net/feed.xml" "https://www.undeadly.org/cgi?action=rss" "https://www.reddit.com/r/openbsd.rss" "https://www.reddit.com/r/rakulang.rss" "https://myme.no/feed.xml" "https://fasterthanli.me/index.xml" "https://ianthehenry.com/feed.xml" "https://databasearchitects.blogspot.com/feeds/posts/default"
      ("https://redecentralize.org/blog/feed.rss" blog decentralized)
      ("http://nullprogram.com/feed" blog programming)
      ("https://venam.nixers.net/blog/feed.xml" blog unix)))
  '(indent-tabs-mode nil)
-;;  '(lsp-enable-indentation nil)
-;;  '(lsp-enable-on-type-formatting nil)
  '(org-agenda-files
-   '("~/oncall/2022-11-28-oncall-week/plan.org" "/Users/samuel/projects/hs/tracing/plan.org" "/Users/samuel/projects/hs/platform/migration-framework/plan.org" "/Users/samuel/oncall/2022-10-03-oncall-week/plan.org" "/Users/samuel/oncall/2022-09-21-undelete-automation/plan.org" "/Users/samuel/oncall/2022-09-12-duplicated-timba-messages/plan.org" "/Users/samuel/oncall/2022-08-29-oncall-week/plan.org" "/Users/samuel/projects/hs/dashboard/plan.org" "/Users/samuel/projects/hs/flink/plan.org" "/Users/samuel/oncall/2022-05-30-oncall-week/plan.org" "/Users/samuel/projects/hs/autox/automations/plan.org" "/Users/samuel/oncall/oncall.org" "/Users/samuel/org/IC.org" "/Users/samuel/org/administrivia.org" "/Users/samuel/projects/hs/autox/auto-assignment/plan.org" "/Users/samuel/projects/hs/autox/FreeSDK/plan.org" "/Users/samuel/projects/hs/autox/flink-benchmarking/plan.org" "/Users/samuel/projects/hs/autox/smart-intents/plan.org" "/Users/samuel/projects/hs/localdevenv/plan.org" "/Users/samuel/projects/hs/meneldor/plan.org" "/Users/samuel/org/tasks.org" "/Users/samuel/projects/hs/chatbots/plan.org"))
+   '())
  '(org-capture-templates
    '(("c" "Code Review" entry
       (file+headline "~/org/tasks.org" "Code Reviews")
       "*** TODO [#B] %?%c" :prepend t)))
  '(org-refile-targets '((org-agenda-files :maxlevel . 3)))
  '(package-selected-packages
-   '(compat merlin log4j-mode elfeed toml-mode csv-mode yaml-mode nix-mode clj-refactor markdown-mode which-key use-package sly rg raku-mode projectile perlbrew nord-theme fzf flycheck-joker flycheck-clj-kondo elpher deadgrep counsel company cider ace-jump-mode))
+   '(jq-mode compat merlin log4j-mode elfeed toml-mode csv-mode yaml-mode nix-mode clj-refactor markdown-mode which-key use-package sly rg raku-mode projectile perlbrew nord-theme fzf flycheck-joker flycheck-clj-kondo elpher deadgrep counsel company cider ace-jump-mode))
  '(tab-bar-select-tab-modifiers '(hyper))
  '(warning-suppress-types '((comp))))
 
