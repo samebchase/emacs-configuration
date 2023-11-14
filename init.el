@@ -91,6 +91,7 @@
 
 (global-set-key (kbd "s-w") 'ace-window)
 (global-set-key (kbd "s-k") 'kill-buffer)
+(global-set-key (kbd "s-y") 'yas-insert-snippet)
  
 (global-set-key (kbd "H-/") 'comment-or-uncomment-region)
 
@@ -328,7 +329,8 @@
   :config (progn
 	    (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 	    (add-hook 'go-mode-hook #'lsp-deferred)
-	    (add-hook 'go-mode-hook #'yas-minor-mode)))
+	    (add-hook 'go-mode-hook #'yas-minor-mode)
+            (add-hook 'go-mode-hook (lambda () (subword-mode 1)))))
 
 (use-package cider
   :ensure t)
@@ -410,9 +412,9 @@
  ;; If there is more than one, they won't work right.
  '(indent-tabs-mode nil)
  '(org-agenda-files
-   '("~/projects/hiring/qube/shortest-path/plan.org" "/home/samuel/org/tech.org" "/home/samuel/org/tasks.org"))
+   '("~/projects/hiring/qube/plan.org" "/home/samuel/org/tech.org" "/home/samuel/org/tasks.org"))
  '(package-selected-packages
-   '(go-mode ace-window 0blayout ac-capf lua-mode rust-mode cmake-mode catppuccin-theme nix-mode sly-macrostep ox-gemini gemini-mode ccls lsp-mode flycheck-clj-kondo flycheck-joker flycheck vc-fossil use-package swoop sly rg projectile pod-mode perl6-mode paredit nord-theme markdown-mode+ magit fzf f elpher dumb-jump deadgrep csv-mode counsel company command-log-mode clojure-mode-extra-font-locking cider ace-jump-mode))
+   '(lsp-treemacs treemacs go-mode ace-window 0blayout ac-capf lua-mode rust-mode cmake-mode catppuccin-theme nix-mode sly-macrostep ox-gemini gemini-mode ccls lsp-mode flycheck-clj-kondo flycheck-joker flycheck vc-fossil use-package swoop sly rg projectile pod-mode perl6-mode paredit nord-theme markdown-mode+ magit fzf f elpher dumb-jump deadgrep csv-mode counsel company command-log-mode clojure-mode-extra-font-locking cider ace-jump-mode))
  '(safe-local-variable-values
    '((Base . 10)
      (Package . FIVEAM)
