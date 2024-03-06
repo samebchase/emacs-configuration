@@ -15,12 +15,15 @@
 (setq exec-path (append exec-path '("/usr/local/bin")))
 (setq exec-path (append exec-path '("~/.cargo/bin")))
 (setq exec-path (append exec-path '("~/bin")))
+(setq exec-path (append exec-path '("~/.asdf/shims/")))
 
 (setenv "LC_CTYPE" "en_US.UTF-8")
 (setenv "LC_ALL" "en_US.UTF-8")
 
 (setenv "LANGUAGE" "en_US.UTF-8")
 (setenv "LANG" "en_US.UTF-8")
+(setenv "RUST_SRC_PATH" "~/.cache/rust-src/library")
+
 
 (setq gc-cons-threshold 100000000)
 (set-charset-priority 'unicode)
@@ -60,6 +63,11 @@
   (concat ns ">\n"))
 
 
+(set-fontset-font t
+                  'emoji
+                  '("My New Emoji Font" . "iso10646-1") nil 'prepend)
+
+
 (setq-default
  ;; Don't use the compiled code if its the older package.
  load-prefer-newer t
@@ -71,6 +79,11 @@
  ns-right-command-modifier 'hyper
  ns-right-option-modifier 'super
 
+ org-adapt-indentation t
+
+ mastodon-instance-url "https://fantastic.earth"
+ mastodon-active-user "samebchase"
+ 
  cider-repl-prompt-function 'cider-repl-prompt-on-newline)
 
 ;; Change all yes/no questions to y/n type
@@ -139,7 +152,7 @@
 (global-set-key (kbd "H-k") 'cider-eval-defun-at-point)
 (global-set-key (kbd "H-<f3>") 'cider-debug-defun-at-point)
 (global-set-key (kbd "H-t") 'cider-test-run-test)
-(global-set-key (kbd "H-M-t") 'cider-test-run-ns-tests)
+(global-set-key (kbd "H-s-t") 'cider-test-run-ns-tests)
 
 (global-set-key (kbd "H-n") 'org-toggle-narrow-to-subtree)
 
@@ -157,6 +170,8 @@
 
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 
+;; temp?
+(global-set-key (kbd "<f5>") 'eglot-format-buffer)
 
 (require 'use-package)
 
@@ -251,7 +266,8 @@
 
 
 (use-package rust-mode
-  :ensure t)
+  :ensure t
+  :init (add-hook 'rust-mode-hook 'lsp-deferred))
 
 
 (use-package markdown-mode
@@ -379,6 +395,11 @@
 ;;   :hook ((c-mode c++-mode objc-mode) . (lambda () (require 'ccls) (lsp))))
 
 
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(elixir-mode . ("/home/samuel/tmp/elx-ls/language_server.sh"))))
+
+
 ;; (require 'dired-x)
 
 ;; (add-hook 'slime-repl-mode-hook 'enable-paredit-mode)
@@ -412,9 +433,10 @@
  ;; If there is more than one, they won't work right.
  '(indent-tabs-mode nil)
  '(org-agenda-files
-   '("~/projects/hiring/qube/plan.org" "/home/samuel/org/tech.org" "/home/samuel/org/tasks.org"))
+   '("~/projects/funemployment/Spec.org" "/home/samuel/org/tech.org" "/home/samuel/org/tasks.org"))
+ '(org-babel-load-languages '((perl . t) (shell . t) (emacs-lisp . t)))
  '(package-selected-packages
-   '(lsp-treemacs treemacs go-mode ace-window 0blayout ac-capf lua-mode rust-mode cmake-mode catppuccin-theme nix-mode sly-macrostep ox-gemini gemini-mode ccls lsp-mode flycheck-clj-kondo flycheck-joker flycheck vc-fossil use-package swoop sly rg projectile pod-mode perl6-mode paredit nord-theme markdown-mode+ magit fzf f elpher dumb-jump deadgrep csv-mode counsel company command-log-mode clojure-mode-extra-font-locking cider ace-jump-mode))
+   '(winum mastodon gradle-mode eglot symbols-outline exunit flycheck-elixir elixir-mode latex-preview-pane company-auctex auctex lsp-treemacs treemacs go-mode ace-window 0blayout ac-capf lua-mode rust-mode cmake-mode catppuccin-theme nix-mode sly-macrostep ox-gemini gemini-mode ccls lsp-mode flycheck-clj-kondo flycheck-joker flycheck vc-fossil use-package swoop sly rg projectile pod-mode perl6-mode paredit nord-theme markdown-mode+ magit fzf f elpher dumb-jump deadgrep csv-mode counsel company command-log-mode clojure-mode-extra-font-locking cider ace-jump-mode))
  '(safe-local-variable-values
    '((Base . 10)
      (Package . FIVEAM)
